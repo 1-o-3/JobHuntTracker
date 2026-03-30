@@ -1,0 +1,4 @@
+{
+  "stdout": "  ▲ Next.js 14.2.5\n\n   Creating an optimized production build ...\n",
+  "stderr": "Failed to compile.\n\n./src/app/layout.js\nModule not found: Can't resolve './globals.css'\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n\n> Build failed because of webpack errors\n"
+}
