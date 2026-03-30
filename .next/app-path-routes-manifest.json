@@ -1,1 +1,1 @@
-{"/_not-found/page":"/_not-found","/api/tasks/[id]/route":"/api/tasks/[id]","/api/tasks/route":"/api/tasks","/page":"/","/icon.png/route":"/icon.png","/api/auth/[...nextauth]/route":"/api/auth/[...nextauth]"}
+{"/_not-found/page":"/_not-found","/icon.png/route":"/icon.png","/page":"/","/api/auth/[...nextauth]/route":"/api/auth/[...nextauth]","/api/tasks/[id]/route":"/api/tasks/[id]","/api/tasks/route":"/api/tasks"}
