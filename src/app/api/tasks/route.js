@@ -1,11 +1,52 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
+// Only pick fields that exist in the Prisma Task schema
+function sanitizeTaskData(data) {
+  const allowed = [
+    'title', 'category', 'companyName', 'date', 'time', 'endTime',
+    'duration', 'location', 'zoomLink', 'applySite', 'dressCode',
+    'belongings', 'deadline', 'todoList', 'links', 'memo', 'color',
+    'calendarName', 'icon', 'displayFormat', 'zoomId', 'zoomPassword',
+    'repeatGroupId'
+  ];
 
-const prisma = new PrismaClient();
+  const clean = {};
+  for (const key of allowed) {
+    if (key in data) {
+      clean[key] = data[key];
+    }
+  }
+
+  // Type coercions - only if the field was actually in the request
+  if ('date' in clean) {
+    if (clean.date) {
+      const d = new Date(clean.date);
+      clean.date = isNaN(d.getTime()) ? null : d;
+    } else {
+      clean.date = null;
+    }
+  }
+
+  if ('deadline' in clean) {
+    if (clean.deadline) {
+      const d = new Date(clean.deadline);
+      clean.deadline = isNaN(d.getTime()) ? null : d;
+    } else {
+      clean.deadline = null;
+    }
+  }
+
+  // duration must be Int or null
+  if ('duration' in clean) {
+    const n = parseInt(clean.duration);
+    clean.duration = isNaN(n) ? null : n;
+  }
+
+  return clean;
+}
 
 export async function GET(request) {
   const session = await getServerSession(authOptions);
@@ -34,14 +75,8 @@ export async function POST(request) {
   }
 
   try {
-    const data = await request.json();
-    
-    // Convert 'date' string to Date object if valid, otherwise null
-    if (data.date) data.date = new Date(data.date);
-    else data.date = null;
-
-    if (data.deadline) data.deadline = new Date(data.deadline);
-    else data.deadline = null;
+    const raw = await request.json();
+    const data = sanitizeTaskData(raw);
 
     const newTask = await prisma.task.create({
       data: {
@@ -50,9 +85,10 @@ export async function POST(request) {
       }
     });
     
+    console.log("Task created successfully:", newTask.id);
     return NextResponse.json(newTask, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to create task" }, { status: 500 });
+    console.error("API POST Error:", error);
+    return NextResponse.json({ error: "Failed to create task", detail: error.message }, { status: 500 });
   }
 }

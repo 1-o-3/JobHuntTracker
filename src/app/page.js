@@ -50,10 +50,10 @@ export default function Dashboard() {
   return (
     <div className="container">
       <header>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 className="header-title" style={{ margin: 0 }}>Job Hunt Tracker</h1>
           
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div className="header-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginRight: '0.5rem' }}>
               {session.user?.image && <img src={session.user.image} alt="👤" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />}
               <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{session.user?.name}</span>
@@ -77,14 +77,14 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="dashboard-grid glass card">
+      <main className="dashboard-grid">
         {/* Left Column: Calendar */}
-        <div className="calendar-section">
+        <div className="calendar-section glass card">
           <Calendar onEditTask={openEditModal} />
         </div>
 
         {/* Right Column: Upcoming Tasks */}
-        <div className="tasks-section">
+        <div className="tasks-section glass card">
           <TaskList onEditTask={openEditModal} />
         </div>
       </main>

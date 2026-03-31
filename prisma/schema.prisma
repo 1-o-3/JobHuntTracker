@@ -41,6 +41,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  settings      Json?
   accounts      Account[]
   sessions      Session[]
   tasks         Task[]
@@ -77,6 +78,9 @@ model Task {
   calendarName  String?
   icon          String?
   displayFormat String?  @default("all")
+  zoomId        String?
+  zoomPassword  String?
+  repeatGroupId String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

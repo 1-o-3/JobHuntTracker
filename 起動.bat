@@ -9,5 +9,5 @@ echo ------------------------------------------
 
 start http://localhost:3000
 
-call npm run dev
+call npm run dev -- -p 3000
 pause
