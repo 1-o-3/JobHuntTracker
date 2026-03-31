@@ -78,51 +78,32 @@ export default function Calendar({ onEditTask }) {
 
   const renderHeader = () => {
     return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
-        <h2 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+      <div className="calendar-header">
+        <div className="calendar-title-group">
           <CalIcon color="var(--accent-primary)" />
-          {format(currentDate, 'yyyy年 M月', { locale: ja })}
-        </h2>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <h2 className="calendar-title">{format(currentDate, 'yyyy年 M月', { locale: ja })}</h2>
+        </div>
+        <div className="calendar-actions-group">
           <button 
             onClick={toggleCopyMode} 
-            className={`btn-secondary ${isCopyMode ? 'copy-selected' : ''}`}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: isCopyMode ? 'var(--accent-primary)' : 'var(--surface)', color: isCopyMode ? '#fff' : 'var(--text-main)', border: '1px solid var(--border)', padding: '0.5rem 1rem', borderRadius: '0.5rem', cursor: 'pointer' }}
+            className={`btn-calendar-header copy-btn ${isCopyMode ? 'active' : ''}`}
           >
-            <Copy size={18} /> {isCopyMode ? 'コピー先をクリック' : 'コピーモード'}
+            <Copy size={18} /> <span>{isCopyMode ? 'コピー先を選択' : 'コピーモード'}</span>
           </button>
-          <div style={{ display: 'flex', background: 'var(--surface)', borderRadius: '0.5rem', overflow: 'hidden', border: '1px solid var(--border)' }}>
+          <div className="calendar-view-toggle">
             <button 
               onClick={() => setView('month')}
-              style={{
-                padding: '0.5rem 1rem',
-                background: view === 'month' ? 'var(--accent-primary)' : 'transparent',
-                color: view === 'month' ? 'white' : 'var(--text-main)',
-                border: 'none',
-                fontWeight: 600
-              }}
+              className={view === 'month' ? 'active' : ''}
             >月</button>
             <button 
               onClick={() => setView('week')}
-              style={{
-                padding: '0.5rem 1rem',
-                background: view === 'week' ? 'var(--accent-primary)' : 'transparent',
-                color: view === 'week' ? 'white' : 'var(--text-main)',
-                border: 'none',
-                fontWeight: 600
-              }}
+              className={view === 'week' ? 'active' : ''}
             >週</button>
           </div>
-          <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button onClick={prevPeriod} className="btn-secondary" style={{ padding: '0.5rem' }}>
-              <ChevronLeft size={20} />
-            </button>
-            <button onClick={nextPeriod} className="btn-secondary" style={{ padding: '0.5rem' }}>
-              <ChevronRight size={20} />
-            </button>
-            <button onClick={() => setCurrentDate(new Date())} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
-              今日
-            </button>
+          <div className="calendar-nav-group">
+            <button onClick={prevPeriod} className="btn-calendar-nav"><ChevronLeft size={20} /></button>
+            <button onClick={nextPeriod} className="btn-calendar-nav"><ChevronRight size={20} /></button>
+            <button onClick={() => setCurrentDate(new Date())} className="btn-calendar-nav today-btn">今日</button>
           </div>
         </div>
       </div>
@@ -136,13 +117,13 @@ export default function Calendar({ onEditTask }) {
 
     for (let i = 0; i < 7; i++) {
       days.push(
-        <div key={i} style={{ textAlign: 'center', fontWeight: 'bold', padding: '0.5rem', color: 'var(--text-muted)' }}>
+        <div key={i} className="weekday-header">
           {format(addDays(startDate, i), dateFormat, { locale: ja })}
         </div>
       );
     }
 
-    return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--border)' }}>{days}</div>;
+    return <div className="weekday-row">{days}</div>;
   };
 
   const renderCells = () => {
@@ -173,13 +154,13 @@ export default function Calendar({ onEditTask }) {
           <div
             key={day}
             onClick={() => handleDayClick(cloneDay)}
+            className={`calendar-cell ${view === 'month' ? 'month-view' : 'week-view'}`}
             style={{
-              height: view === 'month' ? '120px' : '300px',
               overflowY: 'auto',
-              padding: '0.5rem',
+              padding: '0.4rem',
               borderRight: i < 6 ? '1px solid var(--border)' : 'none',
               borderBottom: '1px solid var(--border)',
-              background: isSameDay(day, new Date()) ? 'rgba(234, 179, 8, 0.15)' : (!isSameMonth(day, monthStart) && view === 'month' ? 'var(--surface)' : 'var(--surface-solid)'),
+              background: isSameDay(day, new Date()) ? 'rgba(234, 179, 8, 0.12)' : (!isSameMonth(day, monthStart) && view === 'month' ? 'var(--surface)' : 'var(--surface-solid)'),
               opacity: (() => {
                 const isPast = isBefore(startOfDay(day), startOfDay(new Date())) && !isSameDay(day, new Date());
                 const isOtherMonth = !isSameMonth(day, monthStart) && view === 'month';
@@ -191,13 +172,13 @@ export default function Calendar({ onEditTask }) {
               cursor: isCopyMode ? 'pointer' : 'default'
             }}
           >
-            <div style={{ textAlign: 'right', marginBottom: '0.5rem' }}>
-              <span style={{
+            <div style={{ textAlign: 'right', marginBottom: '2px' }}>
+              <span className="day-number" style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '1.75rem',
-                height: '1.75rem',
+                width: '1.5rem',
+                height: '1.5rem',
                 borderRadius: '50%',
                 background: isSameDay(day, new Date()) ? 'var(--accent-primary)' : 'transparent',
                 color: isSameDay(day, new Date()) ? 'white' : 'inherit',
@@ -230,30 +211,30 @@ export default function Calendar({ onEditTask }) {
                       <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {iconStr && renderedIcon} <span>{timeStr}</span>
                       </div>
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>
-                    </div>
-                  );
-                } else if (formatMode === 'icon_time') {
-                  displayString = <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>{iconStr && renderedIcon} <span>{timeStr}</span></div>;
-                } else if (formatMode === 'name_time') {
-                  displayString = (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <div style={{ fontWeight: 600 }}>{timeStr}</div>
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>
-                    </div>
-                  );
-                } else if (formatMode === 'icon_name') {
-                  displayString = (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      {iconStr && renderedIcon} 
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>
-                    </div>
-                  );
-                } else if (formatMode === 'icon_only') {
-                  displayString = <div style={{ textAlign: 'center' }}>{iconStr ? renderedIcon : null}</div>;
-                } else if (formatMode === 'name_only') {
-                  displayString = <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>;
-                }
+                    <div className="task-title-text" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>
+                  </div>
+                );
+              } else if (formatMode === 'icon_time') {
+                displayString = <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>{iconStr && renderedIcon} <span>{timeStr}</span></div>;
+              } else if (formatMode === 'name_time') {
+                displayString = (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div style={{ fontWeight: 600 }}>{timeStr}</div>
+                    <div className="task-title-text" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>
+                  </div>
+                );
+              } else if (formatMode === 'icon_name') {
+                displayString = (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {iconStr && renderedIcon} 
+                    <div className="task-title-text" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>
+                  </div>
+                );
+              } else if (formatMode === 'icon_only') {
+                displayString = <div style={{ textAlign: 'center' }}>{iconStr ? renderedIcon : null}</div>;
+              } else if (formatMode === 'name_only') {
+                displayString = <div className="task-title-text" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nameStr}</div>;
+              }
 
                 return (
                 <div 
@@ -280,21 +261,21 @@ export default function Calendar({ onEditTask }) {
         );
         day = addDays(day, 1);
       }
-      rows.push(
-        <div key={day} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-          {days}
-        </div>
-      );
+    rows.push(
+      <div key={day} className="calendar-row">
+        {days}
+      </div>
+    );
       days = [];
     }
-    return <div>{rows}</div>;
+    return <div className="calendar-grid">{rows}</div>;
   };
 
   return (
     <div className="calendar" style={{ background: 'transparent' }}>
       {renderHeader()}
-      <div className="calendar-table-container" style={{ overflowX: 'auto', paddingBottom: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', minHeight: '600px' }}>
-        <div style={{ minWidth: '700px', width: '100%', background: 'var(--surface-solid)' }}>
+      <div className="calendar-table-container">
+        <div className="calendar-content">
           {renderDaysOfWeek()}
           {renderCells()}
         </div>
